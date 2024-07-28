@@ -14,6 +14,6 @@ namespace NzWalks.API.Data
 
         public DbSet<Walk> Walks { get; set; }
 
-        public DbSet<WalkDifficulty> WalkDifficulty { get; set; }
+        public DbSet<Difficulty> Difficulty { get; set; }
     }
 }

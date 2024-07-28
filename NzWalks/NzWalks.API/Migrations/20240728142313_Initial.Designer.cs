@@ -12,7 +12,7 @@ using NzWalks.API.Data;
 namespace NzWalks.API.Migrations
 {
     [DbContext(typeof(NZWalksDbContext))]
-    [Migration("20240727191859_Initial")]
+    [Migration("20240728142313_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,32 +24,37 @@ namespace NzWalks.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("NzWalks.API.Models.Domain.Difficulty", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Difficulty");
+                });
+
             modelBuilder.Entity("NzWalks.API.Models.Domain.Region", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Area")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Lat")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Long")
-                        .HasColumnType("float");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("Population")
-                        .HasColumnType("bigint");
+                    b.Property<string>("RegionImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -62,7 +67,14 @@ namespace NzWalks.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Length")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("DifficultyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("LengthInKm")
                         .HasColumnType("float");
 
                     b.Property<string>("Name")
@@ -72,55 +84,35 @@ namespace NzWalks.API.Migrations
                     b.Property<Guid>("RegionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("WalkDifficultyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegionId");
-
-                    b.HasIndex("WalkDifficultyId");
-
-                    b.ToTable("Walks");
-                });
-
-            modelBuilder.Entity("NzWalks.API.Models.Domain.WalkDifficulty", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
+                    b.Property<string>("WalkImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("WalkDifficulty");
+                    b.HasIndex("DifficultyId");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("Walks");
                 });
 
             modelBuilder.Entity("NzWalks.API.Models.Domain.Walk", b =>
                 {
-                    b.HasOne("NzWalks.API.Models.Domain.Region", "Region")
-                        .WithMany("Walks")
-                        .HasForeignKey("RegionId")
+                    b.HasOne("NzWalks.API.Models.Domain.Difficulty", "WalkDifficulty")
+                        .WithMany()
+                        .HasForeignKey("DifficultyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NzWalks.API.Models.Domain.WalkDifficulty", "WalkDifficulty")
+                    b.HasOne("NzWalks.API.Models.Domain.Region", "Region")
                         .WithMany()
-                        .HasForeignKey("WalkDifficultyId")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Region");
 
                     b.Navigation("WalkDifficulty");
-                });
-
-            modelBuilder.Entity("NzWalks.API.Models.Domain.Region", b =>
-                {
-                    b.Navigation("Walks");
                 });
 #pragma warning restore 612, 618
         }
